@@ -1,0 +1,113 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Chama WebApp</title>
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.3/dist/tailwind.min.css" rel="stylesheet"/>
+<script data-domain="a.picoapps.xyz" defer="" src="https://plausible.io/js/script.outbound-links.js"></script></head>
+<body class="bg-gray-50 min-h-screen flex items-center justify-center">
+<div class="container mx-auto p-5">
+<h1 class="text-2xl text-center mb-5 font-bold">Chama WebApp</h1>
+<div class="bg-white p-5 rounded-lg shadow-lg">
+<div class="flex flex-col mb-4">
+<label class="text-gray-700 font-bold mb-2">Admin Password</label>
+<input class="p-2 border rounded" id="adminPassword" placeholder="Enter Admin Password" type="password"/>
+</div>
+<div class="flex justify-center mb-4">
+<button class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-700" id="unlockButton">Unlock</button>
+</div>
+<div class="hidden" id="memberSection">
+<div class="flex flex-col mb-4">
+<label class="text-gray-700 font-bold mb-2">Member Name</label>
+<input class="p-2 border rounded" id="memberName" placeholder="Enter Member Name" type="text"/>
+</div>
+<div class="flex flex-col mb-4">
+<label class="text-gray-700 font-bold mb-2">Contribution</label>
+<input class="p-2 border rounded" id="contribution" placeholder="Enter Contribution Amount" type="number"/>
+</div>
+<div class="flex flex-col mb-4">
+<label class="text-gray-700 font-bold mb-2">Date</label>
+<input class="p-2 border rounded" id="contributionDate" type="date"/>
+</div>
+<div class="flex justify-center mb-6">
+<button class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700" id="addMember">Add Member</button>
+</div>
+<h2 class="text-xl font-bold mb-3">Members</h2>
+<ul class="list-disc list-inside" id="memberList">
+</ul>
+<h2 class="text-xl font-bold mt-6 mb-3">Total Contributions: <span id="totalContributions">0</span> to Consolidated Account</h2>
+</div>
+</div>
+</div>
+<script>
+        const adminPasswordInput = document.getElementById('adminPassword');
+        const unlockButton = document.getElementById('unlockButton');
+        const memberSection = document.getElementById('memberSection');
+        const memberNameInput = document.getElementById('memberName');
+        const contributionInput = document.getElementById('contribution');
+        const contributionDateInput = document.getElementById('contributionDate');
+        const addMemberButton = document.getElementById('addMember');
+        const memberList = document.getElementById('memberList');
+        const totalContributionsElement = document.getElementById('totalContributions');
+
+        let members = JSON.parse(localStorage.getItem('chamaMembers')) || [];
+        let totalContributions = parseInt(localStorage.getItem('totalContributions')) || 0;
+        const adminPassword = "Braylen@37513884"; // Updated placeholder password
+
+        unlockButton.addEventListener('click', () => {
+            if (adminPasswordInput.value === adminPassword) {
+                memberSection.classList.remove('hidden');
+                adminPasswordInput.value = '';
+            } else {
+                alert('Incorrect password');
+            }
+        });
+
+        function updateMemberList() {
+            memberList.innerHTML = '';
+            let listHtml = '';
+            members.forEach((member, index) => {
+                listHtml += `<li class="flex justify-between items-center mb-3">
+                                <span>${member.name} - $${member.contribution} on ${member.date}</span>
+                                <button onclick="removeMember(${index})" class="text-red-500">Remove</button>
+                            </li>`;
+            });
+            memberList.innerHTML = listHtml;
+            totalContributionsElement.textContent = totalContributions;
+        }
+
+        addMemberButton.addEventListener('click', () => {
+            const memberName = memberNameInput.value.trim();
+            const contribution = parseInt(contributionInput.value.trim());
+            const contributionDate = contributionDateInput.value;
+
+            if (memberName && !isNaN(contribution) && contributionDate) {
+                members.push({ name: memberName, contribution, date: contributionDate });
+                totalContributions += contribution;
+                memberNameInput.value = '';
+                contributionInput.value = '';
+                contributionDateInput.value = '';
+                localStorage.setItem('chamaMembers', JSON.stringify(members));
+                localStorage.setItem('totalContributions', totalContributions);
+                updateMemberList();
+            }
+        });
+
+        function removeMember(index) {
+            totalContributions -= members[index].contribution;
+            members.splice(index, 1);
+            localStorage.setItem('chamaMembers', JSON.stringify(members));
+            localStorage.setItem('totalContributions', totalContributions);
+            updateMemberList();
+        }
+
+        updateMemberList();
+    </script>
+
+<a href="https://picoapps.xyz/remix?appUrl=throughout-national&amp;ref=InvertedBadge" rel="noopener noreferrer" style="position: fixed; bottom: 5px; left: 0px; margin-bottom:10px; margin-left:10px; z-index: 9999; background-color: black; border-radius: 5px;box-shadow: 0 0 0 1px rgba(0,0,0,.1), 0 1px 3px rgba(0,0,0,.1);" target="_blank">
+<img alt="Pico Badge" src="https://picoapps.xyz/badge/badge-inverted.png" style="width: 160px;"/>
+</a></body>
+</html>
